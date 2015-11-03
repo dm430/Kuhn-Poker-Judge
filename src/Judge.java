@@ -17,6 +17,9 @@ public class Judge {
     private PlayerAI playerAI;
     private Stack<Card> deck;
 
+    private int gamesPlayed;
+    private int gamesWon;
+
     public Judge(File file) {
         this.deck = initDeck();
         this.myAI = new RandomAI();
@@ -58,7 +61,7 @@ public class Judge {
         myAI.setCard(deck.pop());
     }
 
-    private void startGame() throws Exception {
+    public void startGame() throws Exception {
         final double RATE = .5;
 
         int round = 0;
@@ -77,15 +80,18 @@ public class Judge {
                 if (nextMove == Move.CHECK) {
                     //TODO: show down
                     isPlaying = false;
+                    showDown();
                 } else if (nextMove != Move.BET) {
                     throw new Exception("You can not do that");
                 }
             } else if (move == Move.BET) {
                 if (nextMove == Move.FOLD) {
                     // other player wins
+                    isPlaying = false;
                 } else if (nextMove == Move.CALL) {
                     //TODO: show down
                     isPlaying = false;
+                    showDown();
                 } else {
                     throw new Exception("You cant do that");
                 }
@@ -94,5 +100,23 @@ public class Judge {
             round++;
             move = nextMove;
         }
+
+        gamesPlayed++;
+    }
+
+    private void showDown() {
+        int playerAiValue = playerAI.showHand().compareTo(myAI.showHand());
+
+        if (playerAiValue >= 1) {
+            gamesWon++;
+        }
+    }
+
+    public int getGamesPlayed() {
+        return gamesPlayed;
+    }
+
+    public int getGamesWon() {
+        return gamesWon;
     }
 }
